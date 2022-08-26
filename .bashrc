@@ -1,0 +1,170 @@
+#!/bin/bash
+
+# Globals {{{
+# -------
+
+set -o vi
+umask 0077
+
+# User
+export USER="$(whoami)"
+export GITUSER="${USER}"
+export CORE="${HOME}/.core"
+export SCRIPTS="${CORE}/scripts"
+export WORKSPACE="${HOME}/Workspace"
+export VIRTUALMACHINES="${WORKSPACE}/vms"
+export REPOS="${WORKSPACE}/repos"
+export DESKTOP="${HOME}/Desktop"
+export DOCUMENTS="${HOME}/Documents"
+export DOWNLOADS="${HOME}/Downloads"
+export PICTURES="${HOME}/Pictures"
+export PUBLIC="${HOME}/Public"
+export PRIVATE="${HOME}/Private"
+
+# Shell
+export TERM=xterm-256color
+export HRULEWIDTH=73
+export EDITOR_PREFIX=nvim
+export EDITOR=nvim
+export VISUAL=nvim
+export CLICOLOR=1
+export LSCOLORS="ExfxcxdxbxDxCxabagacad"
+export HISTCONTROL=ignoreboth
+export HISTSIZE=5000
+export HISTFILESIZE=10000
+export GPG_TTY=$(tty)
+export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence default zsh warning on macos
+
+# Homebrew
+export HOMEBREW_CASK_OPTS="--require-sha"
+export HOMEBREW_NO_INSECURE_REDIRECT=1
+export HOMEBREW_NO_ANALYTICS=1
+
+# Rust
+export CARGO_HOME="${HOME}/.local/share/cargo"
+export RUSTUP_HOME="${HOME}/.local/share/rust"
+
+# Go
+export GOPATH="${HOME}/.local/share/go"
+export GOBIN="${HOME}/.local/bin"
+
+# Containers
+export CONTAINER_APP=docker
+export DOCKER_CONTENT_TRUST=0
+
+# Path
+pathappend() {
+    declare arg
+    for arg in "$@"; do
+        test -d "$arg" || continue
+        PATH=${PATH//":$arg:"/:}
+        PATH=${PATH/#"$arg:"/}
+        PATH=${PATH/%":$arg"/}
+        export PATH="${PATH:+"$PATH:"}$arg"
+    done
+}
+
+pathprepend() {
+    for arg in "$@"; do
+        test -d "$arg" || continue
+        PATH=${PATH//:"$arg:"/:}
+        PATH=${PATH/#"$arg:"/}
+        PATH=${PATH/%":$arg"/}
+        export PATH="$arg${PATH:+":${PATH}"}"
+    done
+}
+
+pathprepend \
+    "${HOME}/.local/share/cargo/bin" \
+    "${HOME}/.local/bin" \
+    "${SCRIPTS}" 
+
+pathappend \
+  /usr/local/bin \
+  /usr/local/sbin \
+  /usr/local/games \
+  /usr/games \
+  /usr/sbin \
+  /usr/bin \
+  /snap/bin \
+  /sbin \
+  /bin
+
+export CDPATH=".:${HOME}:${CORE}:${WORKSPACE}:${REPOS}"
+
+# Dircolors
+if [[ $(command -v dircolors) ]]; then
+    if [[ -r "${HOME}/.dircolors" ]]; then
+        eval "$(dircolors -b "${HOME}/.dircolors")"
+    else
+        eval "$(dircolors -b)"
+    fi
+fi
+
+# Prompt
+__prompt() {
+  local username='\u' hostname='\h' character='❯' status="$?" status_color \
+        git_branch format directory_prefix directory directory_suffix \
+        o='\[\e[1;30m\]' r='\[\e[1;31m\]' g='\[\e[1;32m\]' \
+        y='\[\e[1;33m\]' b='\[\e[1;34m\]' m='\[\e[1;35m\]' \
+        c='\[\e[1;36m\]' w='\[\e[1;37m\]' d='\[\e[0m\]'
+
+  status_color=${g}
+  directory="${b}${PWD##*/}${d}"
+  git_branch="$(git branch --show-current 2>/dev/null)"
+
+  [[ "${status}" != 0 ]] && status_color="${r}"
+  [[ "${PWD}" == / ]] && directory="${b}/${d}"
+  [[ "${PWD}" == "$HOME" ]] && directory="${b}~${d}"
+  [[ "${PWD}" != $HOME* ]] && directory_suffix="🔒"
+  [[ -n "${git_branch}" ]] && git_branch=" on${m}  ${git_branch}${d}"
+
+  format="\n${directory_prefix}${directory}${directory_suffix}${git_branch} \n${status_color}${character} ${d}"
+  PS1="${format}"
+}
+
+PROMPT_COMMAND="__prompt"
+
+# Aliases
+unalias -a
+alias '??'='google'
+alias 'cd..'='cd ..'
+alias cd='>/dev/null cd'
+alias c='clear'
+alias l='/bin/ls -G --color'
+alias ls='/bin/ls -lahG --color'
+alias temp="cd $(mktemp -d)"
+alias tmux="tmux -f ${HOME}/.config/tmux/tmux.conf"
+alias chmox="chmod +x"
+
+# Functions
+reload() {
+  source "${HOME}/.bashrc"
+
+  if [[ $(command -v tmux) ]]; then
+    tmux source-file "${HOME}/.config/tmux/tmux.conf"
+  fi
+}
+
+# Completion
+comp=(vis)
+
+for exe in ${comp[@]}; do complete -C "${exe}" "${exe}"; done
+
+# Source bash_completion
+if [[ $(command -v brew) ]]; then
+  if [[ -r "$(brew --prefix)/etc/bash_completion" ]]; then
+    source "$(brew --prefix)/etc/bash_completion"
+  fi
+else
+  if [[ -r "/etc/profile.d/bash_completion.sh" ]]; then
+    source "/etc/profile.d/bash_completion.sh"
+  fi
+fi
+
+# Source private bashrc
+[[ -f "${HOME}/.bashrc_private" ]] && source "${HOME}/.bashrc_private"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
