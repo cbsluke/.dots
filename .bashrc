@@ -47,6 +47,7 @@ export RUSTUP_HOME="${HOME}/.local/share/rust"
 # Go
 export GOPATH="${HOME}/.local/share/go"
 export GOBIN="${HOME}/.local/bin"
+export PATH="${HOME}/.local/share/go/bin"
 
 # Containers
 export CONTAINER_APP=docker
