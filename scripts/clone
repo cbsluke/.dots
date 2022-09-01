@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+url=$1 
+[[ ${url} != *"git@github.com"* ]] && url=git@github.com:${USER}/$1
+basename=${url##*/}
+name=${2:-${basename%.*}}
+
+mkdir $name
+cd "$name"
+
+git clone --recursive --bare "$url" .repo
+echo "gitdir: ./.repo" > .git
+
+git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+git fetch origin
+
+grep master <<< $(git branch)
+[[ $? -eq 0 ]] && git worktree add master
+
+grep main <<< $(git branch)
+[[ $? -eq 0 ]] && git worktree add main

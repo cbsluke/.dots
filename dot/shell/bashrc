@@ -4,7 +4,10 @@
 # -------
 
 set -o vi
-umask 0077
+
+# default permissions on folders/files/etc creation
+# this is inverted meaning perm 0 = rwx
+umask 0077 
 
 # User
 export USER="$(whoami)"
@@ -14,12 +17,15 @@ export SCRIPTS="${CORE}/scripts"
 export WORKSPACE="${HOME}/Workspace"
 export VIRTUALMACHINES="${WORKSPACE}/vms"
 export REPOS="${WORKSPACE}/repos"
+export GHREPOS="${REPOS}/github/"
+export GLREPOS="${REPOS}/gitlab/"
 export DESKTOP="${HOME}/Desktop"
 export DOCUMENTS="${HOME}/Documents"
 export DOWNLOADS="${HOME}/Downloads"
 export PICTURES="${HOME}/Pictures"
 export PUBLIC="${HOME}/Public"
 export PRIVATE="${HOME}/Private"
+export CBSREPOS="${REPOS}/cbs"
 
 # Shell
 export TERM=xterm-256color
@@ -35,11 +41,6 @@ export HISTFILESIZE=10000
 export GPG_TTY=$(tty)
 export BASH_SILENCE_DEPRECATION_WARNING=1 # Silence default zsh warning on macos
 
-# Homebrew
-export HOMEBREW_CASK_OPTS="--require-sha"
-export HOMEBREW_NO_INSECURE_REDIRECT=1
-export HOMEBREW_NO_ANALYTICS=1
-
 # Rust
 export CARGO_HOME="${HOME}/.local/share/cargo"
 export RUSTUP_HOME="${HOME}/.local/share/rust"
@@ -47,7 +48,6 @@ export RUSTUP_HOME="${HOME}/.local/share/rust"
 # Go
 export GOPATH="${HOME}/.local/share/go"
 export GOBIN="${HOME}/.local/bin"
-export PATH="${HOME}/.local/share/go/bin"
 
 # Containers
 export CONTAINER_APP=docker
@@ -91,7 +91,8 @@ pathappend \
   /sbin \
   /bin
 
-export CDPATH=".:${HOME}:${CORE}:${WORKSPACE}:${REPOS}"
+# This will first look in your pwd for the folder to cd to otherwise will try resolve on variables/strings/paths given
+export CDPATH=".:${HOME}:${CORE}:${WORKSPACE}:${REPOS}:${CBSREPOS}:${GHREPOS}:${GLREPOS}:${GHREPOS}/${USER}:${GLREPOS}/${USER}"
 
 # Dircolors
 if [[ $(command -v dircolors) ]]; then
@@ -128,6 +129,7 @@ PROMPT_COMMAND="__prompt"
 
 # Aliases
 unalias -a
+alias '?'='brave'
 alias '??'='google'
 alias 'cd..'='cd ..'
 alias cd='>/dev/null cd'
@@ -165,7 +167,3 @@ fi
 
 # Source private bashrc
 [[ -f "${HOME}/.bashrc_private" ]] && source "${HOME}/.bashrc_private"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

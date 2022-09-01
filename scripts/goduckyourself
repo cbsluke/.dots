@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+url="https://duckduckgo.com/q=$(urlencode "$*")"
+echo "${url}" && copy "${url}"
+

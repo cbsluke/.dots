@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[[ $(command -v "${EDITOR}") ]] && exec "${EDITOR}" "$@"
+exec vi "$@"
