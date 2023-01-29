@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+brave https://github.com/luke-cbs &>/dev/null

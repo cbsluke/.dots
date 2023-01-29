@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-mkdir -p "${HOME}/.config/tmux" "${HOME}/.cache/tmux/plugins" 
-
-if [[ ! -d "${HOME}/.cache/tmux/plugins/tpm" ]]; then
-  git clone https://github.com/tmux-plugins/tpm "${HOME}/.cache/tmux/plugins/tpm"
-fi
-
-ln -sf "${PWD}/tmux.conf" "${HOME}/.config/tmux/tmux.conf"
