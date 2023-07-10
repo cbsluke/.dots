@@ -127,7 +127,9 @@ alias cd='>/dev/null cd'
 alias c='clear'
 alias cls='clear'
 alias l='/bin/ls -G --color'
-alias ls='/bin/ls -lahG --color'
+#alias ls='/bin/ls -lahG --color'
+# Make sure to create a ~/.fonts folder and grab a sexy font front https://www.nerdfonts.com/
+alias ls='exa -lah --icons --color automatic --group-directories-first'
 alias temp="cd $(mktemp -d)"
 alias chmox="chmod +x"
 alias launch='nohup $1 >/dev/null 2>&1 &'
@@ -182,7 +184,7 @@ export PATH="$HOME/.moon/bin:$PATH"
 # moonrepo end
 
 # rust
-. "$HOME/.cargo/env"
+#. "$HOME/.cargo/env"
 # end rust
 
 export WASMTIME_HOME="$HOME/.wasmtime"
