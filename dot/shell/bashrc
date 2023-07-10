@@ -125,10 +125,12 @@ unalias -a
 alias 'cd..'='cd ..'
 alias cd='>/dev/null cd'
 alias c='clear'
+alias cls='clear'
 alias l='/bin/ls -G --color'
 alias ls='/bin/ls -lahG --color'
 alias temp="cd $(mktemp -d)"
 alias chmox="chmod +x"
+alias launch='nohup $1 >/dev/null 2>&1 &'
 
 # Functions
 reload() {
@@ -161,7 +163,8 @@ fi
 [[ -f "${HOME}/.bashrc_private" ]] && source "${HOME}/.bashrc_private"
 
 # go
-export PATH=/home/luker/go/bin:$PATH:/usr/local/go/bin
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/go/bin
 # end go
 
 # pnpm
@@ -173,3 +176,15 @@ export PATH="$PNPM_HOME:$PATH"
 export DENO_INSTALL="/home/luker/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 # deno end
+
+# moonrepo
+export PATH="$HOME/.moon/bin:$PATH"
+# moonrepo end
+
+# rust
+. "$HOME/.cargo/env"
+# end rust
+
+export WASMTIME_HOME="$HOME/.wasmtime"
+
+export PATH="$WASMTIME_HOME/bin:$PATH"

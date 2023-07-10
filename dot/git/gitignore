@@ -224,3 +224,7 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+
+# moon
+.moon/cache
+.moon/docker
